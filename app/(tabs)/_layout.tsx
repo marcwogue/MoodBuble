@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Link, Stack, Tabs } from 'expo-router';
+import { Platform, Pressable } from 'react-native';
+import Immersive from "react-native-immersive";
+const ImmersiveAny = Immersive as unknown as { on: () => void; off: () => void };
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -17,43 +19,37 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      // Activer le mode immersif lors du montage du composant
+      // Cela masque la barre de statut et la barre de navigation
+     
+      console.log("Ceci est un appareil Android.");
+
+      // Optionnel: Réactiver le mode immersif si l'utilisateur quitte et revient
+      // ou si le système le désactive (par exemple, après une notification)
+      // Vous pouvez aussi utiliser un événement pour détecter le focus de l'application
+      // et réactiver le mode immersif si nécessaire.
+ 
+    }
+  }, []);
+
+  const exitFullscreen = () => {
+    if (Platform.OS === 'android') {
+      ImmersiveAny.off(); // Désactive le mode immersif
+    }
+  };
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
+    <Stack
+       screenOptions={{
+        headerShown : false
+       }}
+    >
+      <Stack.Screen name='index' />
+      <Stack.Screen name='connexion' />
+      <Stack.Screen name='signup' />
+      <Stack.Screen name='history' />
+    </Stack>
   );
 }
