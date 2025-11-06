@@ -1,22 +1,19 @@
-import { View, Text, TextInput, Button, ImageBackground, Animated } from 'react-native';
+import { View, Text, TextInput, ImageBackground, Animated, Pressable } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { useUsers } from '@/context/user';
 import Toast from 'react-native-toast-message';
 
-
-
 export default function Connexion() {
-  const route = useRouter();
-  const {login} = useUsers();
+  const router = useRouter();
+  const { login, currentUser, isLoading } = useUsers();
   const [email, setEmail] = useState('');
-  const [loger, setloger] = useState(false);
   const [password, setPassword] = useState('');
-  const [fields, setFields] = useState(false)
+  const [fields, setFields] = useState(false);
 
   // refs pour animation
-  const fadeAnim = useRef(new Animated.Value(0)).current; // opacity
-  const scaleAnim = useRef(new Animated.Value(0.8)).current; // scale
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -33,58 +30,65 @@ export default function Connexion() {
     ]).start();
   }, []);
 
-  useEffect(()=>{
-    if (loger) {
-      route.navigate('/')
+  // Si l'utilisateur est déjà connecté, rediriger directement
+  useEffect(() => {
+    if (!isLoading && currentUser) {
+      router.replace('/'); // navigue vers la page principale
     }
-  },[loger])
+  }, [currentUser, isLoading]);
 
   const handleLogin = () => {
-    const jeff =  login(email,password)
-    if (!jeff) {
-      console.log('utilisateur non existant ');
+    const success = login(email, password);
+
+    if (!success) {
       Toast.show({
-        type : 'error',
-        text1 :" utilisateur non existant",
-        visibilityTime : 2000,
-        topOffset : 30,
-        autoHide : true,
-
-
-      })
-      
-    }
-    
-    if (jeff) {
-      Toast.show({ 
-        type : "success",
-        text1 : "connexion reussie",
-        visibilityTime:2000,
+        type: 'error',
+        text1: 'Utilisateur non existant',
+        visibilityTime: 2000,
         topOffset: 30,
-        autoHide:true
-
-      })
-      setloger(true)
+        autoHide: true,
+      });
+      return;
     }
+
+    Toast.show({
+      type: 'success',
+      text1: 'Connexion réussie',
+      visibilityTime: 2000,
+      topOffset: 30,
+      autoHide: true,
+    });
+
+    setTimeout(() => {
+      router.replace('/'); // redirection après succès
+    }, 500);
   };
- 
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-lg font-bold">Chargement...</Text>
+      </View>
+    );
+  }
+
   return (
     <ImageBackground
       source={require('../../assets/images/login.jpeg')}
       resizeMode="cover"
-      className="flex-1 items-center "
+      className="flex-1 items-center justify-center"
     >
       <Animated.Image
         source={require('../../assets/images/ico1.png')}
         style={{
-          width: 192, // 48 * 4
+          width: 192,
           height: 192,
           marginBottom: 20,
           opacity: fadeAnim,
-          transform: [{ scale: scaleAnim },{ translateY : scaleAnim}],
+          transform: [{ scale: scaleAnim }, { translateY: scaleAnim }],
         }}
       />
-      <Toast/>
+      <Toast />
 
       <View className="bg-white/70 p-8 rounded-3xl w-11/12 max-w-md items-center">
         <Text className="text-3xl font-bold text-purple-700 mb-6 text-center">
@@ -111,9 +115,14 @@ export default function Connexion() {
           onBlur={() => setFields(false)}
         />
 
-        <Text className=' py-2 px-4 bg-blue-600 my-8 rounded-xl' onPress={handleLogin}>
-          se connecter
-        </Text>
+        <Pressable
+          onPress={handleLogin}
+          className="py-3 px-6 bg-purple-600 rounded-xl mb-4 w-full"
+        >
+          <Text className="text-white font-bold text-center text-lg">
+            Se connecter
+          </Text>
+        </Pressable>
 
         <Link href='/(tabs)/signup'>
           <Text className="mt-4 text-purple-700 font-semibold">
@@ -121,6 +130,9 @@ export default function Connexion() {
           </Text>
         </Link>
       </View>
+      {fields && (
+        <View className='h-[40vh] w-full '></View>
+      )}
     </ImageBackground>
   );
 }
