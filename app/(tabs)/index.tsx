@@ -14,7 +14,7 @@ export default function Home() {
   const [selectedMood, setSelectedMood] = useState(currentMood?.mood);
   const [note, setNote] = useState('');
   const [menuVisible, setMenuVisible] = useState(false); // état du side menu
-
+  const [fields, setFields] = useState(false)
   // Vérifie si l’utilisateur est connecté
   useEffect(() => {
     setLogged(!!currentUser);
@@ -148,6 +148,8 @@ export default function Home() {
         placeholderTextColor="#6b7280"
         value={note}
         onChangeText={setNote}
+        onFocus={() => setFields(true)}
+        onBlur={() => setFields(false)}
         multiline
         className="w-full bg-white/80 p-4 rounded-xl mt-4 border border-gray-300 text-gray-800"
         style={{ textAlignVertical: 'top' }}
@@ -164,6 +166,9 @@ export default function Home() {
           </Text>
         </Pressable>
       </View>
+      {fields && (
+        <View className='h-[40vh] w-full '></View>
+      )}
 
       {/* Humeur actuelle */}
       {currentMood && (

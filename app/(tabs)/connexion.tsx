@@ -12,7 +12,7 @@ export default function Connexion() {
   const [email, setEmail] = useState('');
   const [loger, setloger] = useState(false);
   const [password, setPassword] = useState('');
-
+  const [fields, setFields] = useState(false)
 
   // refs pour animation
   const fadeAnim = useRef(new Animated.Value(0)).current; // opacity
@@ -97,6 +97,8 @@ export default function Connexion() {
           onChangeText={setEmail}
           className="w-full bg-white/80 p-4 rounded-xl mb-4 border border-gray-300"
           keyboardType="email-address"
+          onFocus={() => setFields(true)}
+          onBlur={() => setFields(false)}
         />
 
         <TextInput
@@ -105,6 +107,8 @@ export default function Connexion() {
           onChangeText={setPassword}
           secureTextEntry
           className="w-full bg-white/80 p-4 rounded-xl mb-6 border border-gray-300"
+          onFocus={() => setFields(true)}
+          onBlur={() => setFields(false)}
         />
 
         <Text className=' py-2 px-4 bg-blue-600 my-8 rounded-xl' onPress={handleLogin}>

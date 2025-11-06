@@ -13,6 +13,7 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [error2, setError2] = useState('');
   const [avatar, setAvatar] = useState<string | null>(null); // Base64
+  const [fields, setFields] = useState(false)
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -107,7 +108,7 @@ export default function Signup() {
     Toast.show({
       text1 : error,
       text2 : error2,
-      type : "succes",
+      type : "success",
       visibilityTime: 2000,
       
   })
@@ -157,6 +158,8 @@ export default function Signup() {
           placeholder="Nom d'utilisateur"
           value={username}
           onChangeText={setUsername}
+          onFocus={() => setFields(true)}
+          onBlur={() => setFields(false)}
           className="w-full bg-white/80 p-4 rounded-xl mb-4 border border-gray-300 text-gray-800"
         />
 
@@ -164,6 +167,8 @@ export default function Signup() {
           placeholder="Mot de passe"
           value={password}
           onChangeText={setPassword}
+          onFocus={() => setFields(true)}
+          onBlur={() => setFields(false)}
           secureTextEntry
           className="w-full bg-white/80 p-4 rounded-xl mb-4 border border-gray-300 text-gray-800"
         />
@@ -173,6 +178,8 @@ export default function Signup() {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
+          onFocus={() => setFields(true)}
+          onBlur={() => setFields(false)}
           className="w-full bg-white/80 p-4 rounded-xl mb-6 border border-gray-300 text-gray-800"
         />
 
